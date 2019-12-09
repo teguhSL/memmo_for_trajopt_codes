@@ -4,9 +4,9 @@ import trajoptpy.kin_utils as ku
 from trajoptpy.check_traj import traj_is_safe
 import time
 
-def check_col_with_box(env,x,y,z):
+def check_col_with_box(env,x,y,z, box_size = 0.04):
     box = openravepy.RaveCreateKinBody(env,'')
-    box.InitFromBoxes(np.array([ [x,y,z,0.04,0.04,0.04]]),True)
+    box.InitFromBoxes(np.array([ [x,y,z,box_size,box_size,box_size]]),True)
     box.SetName('box')
     env.Add(box,True)
 

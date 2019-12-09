@@ -86,6 +86,7 @@ class Sparse_GPy_Regressor(Regressor):
     
 #BGMR
 import pbdlib as pbd
+import pdb
 class DP_GLM_Regressor(Regressor):
     def fit(self,x,y):
         self.x_joint = np.concatenate([x, y], axis=1)
@@ -95,13 +96,15 @@ class DP_GLM_Regressor(Regressor):
         self.joint_model = pbd.VBayesianGMM({'n_components':10, 'n_init':20, 'reg_covar': 0.00006 ** 2,
          'covariance_prior': 0.00002 ** 2 * np.eye(self.n_joint),'mean_precision_prior':1e-9})
         self.joint_model.posterior(data=self.x_joint, dp=False, cov=np.eye(self.n_joint))
-    def predict(self,x, return_gmm=False, return_more = False):
+    def predict(self,x, return_gmm=True, return_more = False):
         result = self.joint_model.condition(x, slice(0, self.n_in), slice(self.n_in, self.n_joint),return_gmm = return_gmm) #
+        #pdb.set_trace()
+        
         if return_gmm:
             if return_more:
-                return self.joint_model._h, result[0], result[1] 
+                return result[0], result[1], result[2] 
             else:
-                index = np.argmax(self.joint_model._h)
-                return result[0][index], result[1][index]
+                index = np.argmax(result[0])
+                return result[1][index], result[2][index]
         else:
             return result[0], result[1]
