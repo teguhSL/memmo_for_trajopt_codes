@@ -88,13 +88,13 @@ class Sparse_GPy_Regressor(Regressor):
 import pbdlib as pbd
 import pdb
 class DP_GLM_Regressor(Regressor):
-    def fit(self,x,y):
+    def fit(self,x,y, n_components = 10, n_init = 20 , weight_type = 'dirichlet_process'):
         self.x_joint = np.concatenate([x, y], axis=1)
         self.n_joint = self.x_joint.shape[1]
         self.n_in = x.shape[1]
         self.n_out = y.shape[1]
-        self.joint_model = pbd.VBayesianGMM({'n_components':10, 'n_init':20, 'reg_covar': 0.00006 ** 2,
-         'covariance_prior': 0.00002 ** 2 * np.eye(self.n_joint),'mean_precision_prior':1e-9})
+        self.joint_model = pbd.VBayesianGMM({'n_components':n_components, 'n_init':n_init, 'reg_covar': 0.00006 ** 2,
+     'covariance_prior': 0.00002 ** 2 * np.eye(self.n_joint),'mean_precision_prior':1e-9,'weight_concentration_prior_type':weight_type})
         self.joint_model.posterior(data=self.x_joint, dp=False, cov=np.eye(self.n_joint))
     def predict(self,x, return_gmm=True, return_more = False):
         result = self.joint_model.condition(x, slice(0, self.n_in), slice(self.n_in, self.n_joint),return_gmm = return_gmm) #
