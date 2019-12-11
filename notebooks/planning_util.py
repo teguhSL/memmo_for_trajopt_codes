@@ -150,7 +150,7 @@ def plot_traj(env,traj, timestep = 0.2):
         robot.SetActiveDOFValues(p)
         time.sleep(timestep)
         
-def print_result(results, method_names):
+def print_result(results, method_names, with_func=False):
     print(' Method \t| Success Rate \t| Conv. Time \t| Traj. Cost \t| Func. Evals \t| QP Solves')
     for method in method_names:
         successes = np.array(results[method]['successes'][:])
@@ -158,7 +158,6 @@ def print_result(results, method_names):
 
         comp_times = np.array(results[method]['comp_times'][:])[successes]
         costs = np.array(results[method]['costs'][:])[successes]
-        func_evals = np.array(results[method]['func_evals'][:])[successes]
 
         success_mean = success*100.0/len(successes)
 
@@ -167,8 +166,14 @@ def print_result(results, method_names):
 
         cost_mean = np.sum(costs)/success
         cost_std = np.std(costs)
-        func_mean = np.max(func_evals)/success
-        func_std = np.std(func_evals)
 
-        print('{0} \t& {1:.3f} \t& {2:.2f}$\\pm${3:.2f} \t& {4:.2f}$\\pm${5:.2f} \t & {6:.2f}$\\pm${7:.2f} \t \\\\'.format(method, success_mean, \
-                                        time_mean, time_std, cost_mean, cost_std, func_mean, func_std)) 
+        if with_func:
+            func_evals = np.array(results[method]['func_evals'][:])[successes]
+            func_mean = np.max(func_evals)/success
+            func_std = np.std(func_evals)
+
+            print('{0} \t& {1:.1f} \t& {2:.2f}$\\pm${3:.2f} \t& {4:.2f}$\\pm${5:.2f} \t & {6:.2f}$\\pm${7:.2f} \t \\\\'.format(method, success_mean, \
+                                            time_mean, time_std, cost_mean, cost_std, func_mean, func_std)) 
+        else:
+            print('{0} \t& {1:.1f} \t& {2:.2f}$\\pm${3:.2f} \t& {4:.2f}$\\pm${5:.2f} \\\\'.format(method, success_mean, time_mean, time_std, cost_mean, cost_std)) 
+            
