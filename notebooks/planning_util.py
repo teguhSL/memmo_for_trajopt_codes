@@ -11,6 +11,13 @@ def add_box(env, x,y,z, box_size = 0.04):
     env.Add(box,True)
     return box
 
+def add_ball(env, x,y,z, ball_size = 0.04):
+    ball = openravepy.RaveCreateKinBody(env,'')
+    ball.InitFromSpheres(np.array([ [x,y,z,ball_size]]),True)
+    ball.SetName('ball')
+    env.Add(ball,True)
+    return ball
+
 def check_col_with_box(env,x,y,z, box_size = 0.04):
     box = add_box(env, x,y,z,box_size)
     collision =  env.CheckCollision(box)
